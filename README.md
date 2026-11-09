@@ -83,7 +83,7 @@ WIZALCH retrieves publicly available Grand Exchange market data from the officia
 | `GET /api/v1/osrs/1h` | 1-hour average prices and trade volumes |
 | `GET /api/v1/osrs/timeseries` | Historical price time-series for the selected item in the Analysis view |
 
-- **Privacy Guarantee:** WIZALCH only sends standard HTTP `GET` requests with a descriptive `User-Agent` header (`WIZALCH-RuneLite-Plugin/1.0 (+https://github.com/runelite/plugin-hub)`). **Zero personal data, account names, IP identifiers, or in-game player state are ever collected or transmitted.**
+- **Privacy Guarantee:** WIZALCH only sends standard HTTP `GET` requests with a descriptive `User-Agent` header (`WIZALCH-RuneLite-Plugin/1.0 (+https://github.com/WizardOfAus666/wizalch)`). **Zero personal data, account names, IP identifiers, or in-game player state are ever collected or transmitted.**
 - **Asynchronous & Cached:** All network calls run on background threads via RuneLite's shared `OkHttpClient` and are cached locally in `.runelite/cache/alchmate-pro/` to respect API rate limits.
 
 ---

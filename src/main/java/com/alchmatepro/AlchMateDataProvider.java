@@ -36,7 +36,7 @@ import okhttp3.ResponseBody;
 public class AlchMateDataProvider implements MarketDataProvider
 {
 	public static final String DEFAULT_ENDPOINT = "https://alchmate.com/api/osrs/high-alch";
-	public static final String USER_AGENT = "WIZALCH-RuneLite-Plugin/1.0 (+https://github.com/runelite/plugin-hub)";
+	public static final String USER_AGENT = "WIZALCH-RuneLite-Plugin/1.0 (+https://github.com/WizardOfAus666/wizalch)";
 
 	private final OkHttpClient httpClient;
 	private final Gson gson;

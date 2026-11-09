@@ -28,7 +28,7 @@ import okhttp3.ResponseBody;
 public class WikiPriceDataProvider implements MarketDataProvider
 {
 	public static final String DEFAULT_BASE_URL = "https://prices.runescape.wiki/api/v1/osrs";
-	public static final String USER_AGENT = "WIZALCH-RuneLite-Plugin/1.0 (OSRS High Alch Scanner; +https://github.com/runelite/plugin-hub)";
+	public static final String USER_AGENT = "WIZALCH-RuneLite-Plugin/1.0 (+https://github.com/WizardOfAus666/wizalch)";
 
 	private static final int MAX_RETRIES = 2;
 	private static final long INITIAL_BACKOFF_MS = 400L;
