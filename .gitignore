@@ -1,0 +1,39 @@
+# Gradle & Maven build outputs
+.gradle/
+build/
+target/
+out/
+bin/
+
+# Java class & archive artifacts
+*.class
+*.log
+*.ctxt
+.mtj.tmp/
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+hs_err_pid*
+replay_pid*
+
+# IDE metadata
+.idea/
+*.iws
+*.iml
+*.ipr
+.vscode/
+.classpath
+.project
+.settings/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local Plugin Hub PR staging folder
+plugin-hub-submission/
