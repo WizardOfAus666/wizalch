@@ -19,6 +19,7 @@ import net.runelite.client.plugins.Plugin;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
@@ -69,7 +70,7 @@ public class PluginHubComplianceTest
 		assertNotNull(props.getProperty("tags"));
 		assertNotNull(props.getProperty("version"));
 		assertEquals("standard", props.getProperty("build"));
-		assertNotNull("warning property must disclose external API usage", props.getProperty("warning"));
+		assertNull("warning property belongs in plugin-hub/plugins/wizalch, not runelite-plugin.properties", props.getProperty("warning"));
 
 		String pluginClassName = props.getProperty("plugins");
 		assertEquals("com.alchmatepro.AlchMateProPlugin", pluginClassName);
