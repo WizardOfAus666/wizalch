@@ -180,14 +180,12 @@ public class RecommendationAndServiceTest
 		OkHttpClient http = new OkHttpClient();
 
 		CacheService cacheService = new CacheService(gson);
-		AlchMateDataProvider alchMateProvider = new AlchMateDataProvider(http, gson);
 		WikiPriceDataProvider wikiProvider = new WikiPriceDataProvider(http, gson);
 		ItemMetadataService metadataService = new ItemMetadataService(http, gson, cacheService);
 		WatchlistService watchlistService = new WatchlistService(null, gson);
 		AlertService alertService = new AlertService(null, null, watchlistService);
 
 		MarketDataService service = new MarketDataService(
-			alchMateProvider,
 			wikiProvider,
 			metadataService,
 			cacheService,

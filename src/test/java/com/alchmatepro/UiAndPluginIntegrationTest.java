@@ -64,7 +64,6 @@ public class UiAndPluginIntegrationTest
 		OkHttpClient http = new OkHttpClient();
 
 		CacheService cacheService = new CacheService(gson);
-		AlchMateDataProvider alchMateProvider = new AlchMateDataProvider(http, gson);
 		WikiPriceDataProvider wikiProvider = new WikiPriceDataProvider(http, gson);
 		ItemMetadataService metadataService = new ItemMetadataService(http, gson, cacheService);
 		ProfitCalculator profitCalculator = new ProfitCalculator();
@@ -76,7 +75,6 @@ public class UiAndPluginIntegrationTest
 		IconService iconService = new IconService(null);
 
 		MarketDataService marketDataService = new MarketDataService(
-			alchMateProvider,
 			wikiProvider,
 			metadataService,
 			cacheService,

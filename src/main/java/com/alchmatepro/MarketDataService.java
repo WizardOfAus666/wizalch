@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Central market intelligence orchestrator.
- * Manages background polling, provider failover (AlchMate -> OSRS Wiki API -> Cache),
+ * Manages background polling via the OSRS Wiki Real-Time Prices API,
  * item enrichment, profit calculation, smart recommendations, filtering, sorting, and alerts.
  */
 @Slf4j
@@ -38,7 +38,6 @@ public class MarketDataService
 	public static final int NATURE_RUNE_ITEM_ID = 561;
 	public static final int FIRE_RUNE_ITEM_ID = 554;
 
-	private final AlchMateDataProvider alchMateDataProvider;
 	private final WikiPriceDataProvider wikiPriceDataProvider;
 	private final ItemMetadataService itemMetadataService;
 	private final CacheService cacheService;
@@ -110,7 +109,6 @@ public class MarketDataService
 
 	@Inject
 	public MarketDataService(
-		AlchMateDataProvider alchMateDataProvider,
 		WikiPriceDataProvider wikiPriceDataProvider,
 		ItemMetadataService itemMetadataService,
 		CacheService cacheService,
@@ -120,7 +118,6 @@ public class MarketDataService
 		AlertService alertService,
 		AlchMateProConfig config)
 	{
-		this.alchMateDataProvider = alchMateDataProvider;
 		this.wikiPriceDataProvider = wikiPriceDataProvider;
 		this.itemMetadataService = itemMetadataService;
 		this.cacheService = cacheService;
@@ -133,9 +130,9 @@ public class MarketDataService
 
 		this.statusSnapshot = ProviderStatusSnapshot.builder()
 			.activeProviderName(wikiPriceDataProvider.getProviderName())
-			.primaryProviderName(alchMateDataProvider.getProviderName())
-			.primaryProviderStatusNote(alchMateDataProvider.getStatusSummary())
-			.secondaryProviderName(wikiPriceDataProvider.getProviderName())
+			.primaryProviderName(wikiPriceDataProvider.getProviderName())
+			.primaryProviderStatusNote(wikiPriceDataProvider.getStatusSummary())
+			.secondaryProviderName("OSRS Wiki Item Mapping API")
 			.connectionState(ConnectionState.REFRESHING)
 			.cacheStatusDescription(cacheService.getCacheStatusSummary())
 			.natureRuneLivePrice(150L)
@@ -328,28 +325,10 @@ public class MarketDataService
 				currentMetadataMap.putAll(metadata);
 			}
 
-			// 2. Try primary provider (AlchMateDataProvider), then fallback to WikiPriceDataProvider
-			Map<Integer, MarketPrice> fetchedPrices = null;
-			try
-			{
-				fetchedPrices = alchMateDataProvider.fetchMarketPrices();
-				if (fetchedPrices != null && !fetchedPrices.isEmpty())
-				{
-					activeProvider = alchMateDataProvider.getProviderName();
-					finalState = ConnectionState.LIVE;
-				}
-			}
-			catch (IOException primaryEx)
-			{
-				log.debug("Primary AlchMate provider unavailable ({}), using OSRS Wiki Real-Time API", primaryEx.getMessage());
-			}
-
-			if (fetchedPrices == null || fetchedPrices.isEmpty())
-			{
-				fetchedPrices = wikiPriceDataProvider.fetchMarketPrices();
-				activeProvider = wikiPriceDataProvider.getProviderName();
-				finalState = ConnectionState.LIVE;
-			}
+			// 2. Fetch live Grand Exchange prices from OSRS Wiki Real-Time Prices API
+			Map<Integer, MarketPrice> fetchedPrices = wikiPriceDataProvider.fetchMarketPrices();
+			activeProvider = wikiPriceDataProvider.getProviderName();
+			finalState = ConnectionState.LIVE;
 
 			if (fetchedPrices != null && !fetchedPrices.isEmpty())
 			{
@@ -575,9 +554,9 @@ public class MarketDataService
 
 		this.statusSnapshot = ProviderStatusSnapshot.builder()
 			.activeProviderName(activeProvider)
-			.primaryProviderName(alchMateDataProvider.getProviderName())
-			.primaryProviderStatusNote(alchMateDataProvider.getStatusSummary())
-			.secondaryProviderName(wikiPriceDataProvider.getProviderName())
+			.primaryProviderName(wikiPriceDataProvider.getProviderName())
+			.primaryProviderStatusNote(wikiPriceDataProvider.getStatusSummary())
+			.secondaryProviderName("OSRS Wiki Item Mapping API")
 			.connectionState(connectionState)
 			.lastSuccessfulUpdateEpochSec(lastSuccessEpochSec)
 			.lastAttemptedUpdateEpochSec(lastAttemptEpochSec)
@@ -800,9 +779,9 @@ public class MarketDataService
 	{
 		this.statusSnapshot = ProviderStatusSnapshot.builder()
 			.activeProviderName(statusSnapshot.getActiveProviderName())
-			.primaryProviderName(alchMateDataProvider.getProviderName())
-			.primaryProviderStatusNote(alchMateDataProvider.getStatusSummary())
-			.secondaryProviderName(wikiPriceDataProvider.getProviderName())
+			.primaryProviderName(wikiPriceDataProvider.getProviderName())
+			.primaryProviderStatusNote(wikiPriceDataProvider.getStatusSummary())
+			.secondaryProviderName("OSRS Wiki Item Mapping API")
 			.connectionState(state)
 			.lastSuccessfulUpdateEpochSec(statusSnapshot.getLastSuccessfulUpdateEpochSec())
 			.lastAttemptedUpdateEpochSec(Instant.now().getEpochSecond())

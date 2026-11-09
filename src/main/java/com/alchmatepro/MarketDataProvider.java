@@ -4,8 +4,7 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
- * Abstraction for Grand Exchange market price providers.
- * Allows switching or chaining providers (e.g., AlchMateDataProvider -> WikiPriceDataProvider)
+ * Abstraction for Grand Exchange market price providers (such as {@link WikiPriceDataProvider})
  * without coupling business logic or UI components to a single HTTP endpoint.
  */
 public interface MarketDataProvider

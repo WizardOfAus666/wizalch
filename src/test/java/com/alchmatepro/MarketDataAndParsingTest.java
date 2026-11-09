@@ -24,7 +24,6 @@ public class MarketDataAndParsingTest
 	private Gson gson;
 	private OkHttpClient okHttpClient;
 	private WikiPriceDataProvider wikiProvider;
-	private AlchMateDataProvider alchMateProvider;
 	private ItemMetadataService metadataService;
 	private PriceHistoryService priceHistoryService;
 
@@ -34,7 +33,6 @@ public class MarketDataAndParsingTest
 		gson = new Gson();
 		okHttpClient = new OkHttpClient();
 		wikiProvider = new WikiPriceDataProvider(okHttpClient, gson);
-		alchMateProvider = new AlchMateDataProvider(okHttpClient, gson);
 		metadataService = new ItemMetadataService(okHttpClient, gson, null);
 		priceHistoryService = new PriceHistoryService(okHttpClient, gson);
 	}
@@ -124,15 +122,6 @@ public class MarketDataAndParsingTest
 		{
 			assertTrue(expected.getMessage().contains("Expected JSON array"));
 		}
-	}
-
-	@Test
-	public void testAlchMateProviderJsonParsing()
-	{
-		String json = "[{\"id\": 1127, \"buyPrice\": 37900, \"sellPrice\": 37600, \"volume1h\": 400}]";
-		Map<Integer, MarketPrice> parsed = alchMateProvider.parseJsonPayload(json, 1700000000L);
-		assertEquals(1, parsed.size());
-		assertEquals(Integer.valueOf(37900), parsed.get(1127).getInstantBuyPrice());
 	}
 
 	@Test

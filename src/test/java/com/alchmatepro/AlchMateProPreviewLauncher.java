@@ -36,7 +36,6 @@ public class AlchMateProPreviewLauncher
 			};
 
 			CacheService cacheService = new CacheService(gson);
-			AlchMateDataProvider alchMateProvider = new AlchMateDataProvider(okHttpClient, gson);
 			WikiPriceDataProvider wikiProvider = new WikiPriceDataProvider(okHttpClient, gson);
 			ItemMetadataService metadataService = new ItemMetadataService(okHttpClient, gson, cacheService);
 			ProfitCalculator profitCalculator = new ProfitCalculator();
@@ -48,7 +47,6 @@ public class AlchMateProPreviewLauncher
 			IconService iconService = new IconService(null);
 
 			MarketDataService marketDataService = new MarketDataService(
-				alchMateProvider,
 				wikiProvider,
 				metadataService,
 				cacheService,
