@@ -62,10 +62,8 @@ public class UiAndPluginIntegrationTest
 
 		Gson gson = new Gson();
 		OkHttpClient http = new OkHttpClient();
-		File tempDir = Files.createTempDirectory("alchmate-ui-test").toFile();
-		tempDir.deleteOnExit();
 
-		CacheService cacheService = new CacheService(gson, tempDir);
+		CacheService cacheService = new CacheService(gson);
 		AlchMateDataProvider alchMateProvider = new AlchMateDataProvider(http, gson);
 		WikiPriceDataProvider wikiProvider = new WikiPriceDataProvider(http, gson);
 		ItemMetadataService metadataService = new ItemMetadataService(http, gson, cacheService);

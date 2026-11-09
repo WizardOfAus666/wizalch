@@ -10,7 +10,6 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.Getter;
@@ -58,10 +57,7 @@ public class AlchMateDataProvider implements MarketDataProvider
 	@Inject
 	public AlchMateDataProvider(OkHttpClient okHttpClient, Gson gson)
 	{
-		this.httpClient = okHttpClient.newBuilder()
-			.connectTimeout(8, TimeUnit.SECONDS)
-			.readTimeout(10, TimeUnit.SECONDS)
-			.build();
+		this.httpClient = okHttpClient;
 		this.gson = gson;
 	}
 

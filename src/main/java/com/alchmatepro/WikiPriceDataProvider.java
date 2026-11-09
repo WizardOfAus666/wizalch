@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.Getter;
@@ -49,10 +48,7 @@ public class WikiPriceDataProvider implements MarketDataProvider
 	@Inject
 	public WikiPriceDataProvider(OkHttpClient okHttpClient, Gson gson)
 	{
-		this.httpClient = okHttpClient.newBuilder()
-			.connectTimeout(10, TimeUnit.SECONDS)
-			.readTimeout(15, TimeUnit.SECONDS)
-			.build();
+		this.httpClient = okHttpClient;
 		this.gson = gson;
 	}
 
@@ -81,17 +77,9 @@ public class WikiPriceDataProvider implements MarketDataProvider
 		long elapsedMs = nowMs - lastRequestTimeMs;
 		if (lastRequestTimeMs > 0 && elapsedMs < MIN_REQUEST_INTERVAL_MS)
 		{
-			try
-			{
-				Thread.sleep(MIN_REQUEST_INTERVAL_MS - elapsedMs);
-			}
-			catch (InterruptedException ie)
-			{
-				Thread.currentThread().interrupt();
-				throw new IOException("Market price fetch interrupted during rate-limit wait.", ie);
-			}
+			throw new IOException("Rate-limit guard: request interval below minimum threshold.");
 		}
-		lastRequestTimeMs = System.currentTimeMillis();
+		lastRequestTimeMs = nowMs;
 
 		long fetchedAtEpochSec = Instant.now().getEpochSecond();
 
@@ -323,62 +311,23 @@ public class WikiPriceDataProvider implements MarketDataProvider
 
 	String executeWithRetry(String url) throws IOException
 	{
-		IOException lastException = null;
-		long backoffMs = INITIAL_BACKOFF_MS;
+		Request request = new Request.Builder()
+			.url(url)
+			.header("User-Agent", USER_AGENT)
+			.header("Accept", "application/json")
+			.get()
+			.build();
 
-		for (int attempt = 0; attempt <= MAX_RETRIES; attempt++)
+		try (Response response = httpClient.newCall(request).execute())
 		{
-			if (Thread.currentThread().isInterrupted())
+			int code = response.code();
+			if (response.isSuccessful() && response.body() != null)
 			{
-				throw new IOException("HTTP request interrupted before execution.");
+				ResponseBody body = response.body();
+				return body.string();
 			}
-
-			Request request = new Request.Builder()
-				.url(url)
-				.header("User-Agent", USER_AGENT)
-				.header("Accept", "application/json")
-				.get()
-				.build();
-
-			try (Response response = httpClient.newCall(request).execute())
-			{
-				int code = response.code();
-				if (response.isSuccessful() && response.body() != null)
-				{
-					ResponseBody body = response.body();
-					return body.string();
-				}
-
-				if (code == 429 || code >= 500)
-				{
-					lastException = new IOException("HTTP " + code + " from " + url);
-				}
-				else
-				{
-					throw new IOException("HTTP " + code + " from " + url);
-				}
-			}
-			catch (IOException ex)
-			{
-				lastException = ex;
-			}
-
-			if (attempt < MAX_RETRIES)
-			{
-				try
-				{
-					Thread.sleep(backoffMs);
-				}
-				catch (InterruptedException ie)
-				{
-					Thread.currentThread().interrupt();
-					throw new IOException("Retry backoff interrupted.", ie);
-				}
-				backoffMs *= 2;
-			}
+			throw new IOException("HTTP " + code + " from " + url);
 		}
-
-		throw lastException != null ? lastException : new IOException("Failed to fetch " + url);
 	}
 
 	private static Integer getPositiveInt(JsonObject obj, String key)

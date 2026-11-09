@@ -10,8 +10,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -36,12 +34,6 @@ public class ItemAnalysisPanel extends JPanel
 	private final WatchlistService watchlistService;
 	private final IconService iconService;
 	private final NavigationController navigationController;
-
-	private final ExecutorService historyWorker = Executors.newSingleThreadExecutor(r -> {
-		Thread t = new Thread(r, "AlchMatePro-HistoryWorker");
-		t.setDaemon(true);
-		return t;
-	});
 
 	private AlchMateItem currentItem;
 
@@ -553,7 +545,7 @@ public class ItemAnalysisPanel extends JPanel
 		volatilityLabel.setText("-");
 		trendChartPanel.setTrendData(List.of(), breakEven);
 
-		historyWorker.submit(() -> {
+		marketDataService.submitBackgroundTask(() -> {
 			try
 			{
 				PriceTrendSummary summary = priceHistoryService.fetchTrendSummary(targetId, "1h");
@@ -649,6 +641,5 @@ public class ItemAnalysisPanel extends JPanel
 
 	public void shutDown()
 	{
-		historyWorker.shutdownNow();
 	}
 }

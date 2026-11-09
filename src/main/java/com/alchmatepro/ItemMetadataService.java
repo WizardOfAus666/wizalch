@@ -10,7 +10,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.Getter;
@@ -44,10 +43,7 @@ public class ItemMetadataService implements ItemMetadataProvider
 	@Inject
 	public ItemMetadataService(OkHttpClient okHttpClient, Gson gson, CacheService cacheService)
 	{
-		this.httpClient = okHttpClient.newBuilder()
-			.connectTimeout(10, TimeUnit.SECONDS)
-			.readTimeout(15, TimeUnit.SECONDS)
-			.build();
+		this.httpClient = okHttpClient;
 		this.gson = gson;
 		this.cacheService = cacheService;
 	}

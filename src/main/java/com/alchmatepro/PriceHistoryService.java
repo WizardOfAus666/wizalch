@@ -13,7 +13,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.Getter;
@@ -46,10 +45,7 @@ public class PriceHistoryService
 	@Inject
 	public PriceHistoryService(OkHttpClient okHttpClient, Gson gson)
 	{
-		this.httpClient = okHttpClient.newBuilder()
-			.connectTimeout(8, TimeUnit.SECONDS)
-			.readTimeout(12, TimeUnit.SECONDS)
-			.build();
+		this.httpClient = okHttpClient;
 		this.gson = gson;
 	}
 

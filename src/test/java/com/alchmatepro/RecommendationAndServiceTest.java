@@ -178,10 +178,8 @@ public class RecommendationAndServiceTest
 	{
 		Gson gson = new Gson();
 		OkHttpClient http = new OkHttpClient();
-		File tempCacheDir = Files.createTempDirectory("alchmate-test-cache").toFile();
-		tempCacheDir.deleteOnExit();
 
-		CacheService cacheService = new CacheService(gson, tempCacheDir);
+		CacheService cacheService = new CacheService(gson);
 		AlchMateDataProvider alchMateProvider = new AlchMateDataProvider(http, gson);
 		WikiPriceDataProvider wikiProvider = new WikiPriceDataProvider(http, gson);
 		ItemMetadataService metadataService = new ItemMetadataService(http, gson, cacheService);

@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -57,6 +56,7 @@ public class MarketDataService
 	private final List<Runnable> dataUpdateListeners = new CopyOnWriteArrayList<>();
 	private final AtomicBoolean refreshInProgress = new AtomicBoolean(false);
 
+	@Inject
 	private ScheduledExecutorService executorService;
 	private ScheduledFuture<?> scheduledRefreshTask;
 
@@ -224,32 +224,19 @@ public class MarketDataService
 	 */
 	public synchronized void startUp()
 	{
-		if (executorService == null || executorService.isShutdown())
-		{
-			executorService = Executors.newSingleThreadScheduledExecutor(r -> {
-				Thread t = new Thread(r, "AlchMatePro-MarketWorker");
-				t.setDaemon(true);
-				return t;
-			});
-		}
 		rescheduleAutoRefresh();
 		refreshAsync();
 	}
 
 	/**
-	 * Cleanly cancels scheduled background tasks and shuts down the executor on plugin stop.
+	 * Cleanly cancels scheduled background tasks on plugin stop.
 	 */
 	public synchronized void shutDown()
 	{
 		if (scheduledRefreshTask != null)
 		{
-			scheduledRefreshTask.cancel(true);
+			scheduledRefreshTask.cancel(false);
 			scheduledRefreshTask = null;
-		}
-		if (executorService != null)
-		{
-			executorService.shutdownNow();
-			executorService = null;
 		}
 		refreshInProgress.set(false);
 	}
@@ -285,12 +272,19 @@ public class MarketDataService
 	 */
 	public void refreshAsync()
 	{
-		if (executorService == null || executorService.isShutdown())
+		submitBackgroundTask(this::refreshSynchronouslySafe);
+	}
+
+	/**
+	 * Submits a background task to RuneLite's shared {@link ScheduledExecutorService}.
+	 */
+	public void submitBackgroundTask(Runnable task)
+	{
+		if (task == null || executorService == null || executorService.isShutdown())
 		{
-			startUp();
 			return;
 		}
-		executorService.submit(this::refreshSynchronouslySafe);
+		executorService.submit(task);
 	}
 
 	private void refreshSynchronouslySafe()
