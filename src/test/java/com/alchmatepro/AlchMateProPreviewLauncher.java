@@ -5,6 +5,8 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.lang.reflect.Field;
+import java.util.concurrent.Executors;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -56,6 +58,15 @@ public class AlchMateProPreviewLauncher
 				alertService,
 				defaultConfig
 			);
+			try
+			{
+				Field execField = MarketDataService.class.getDeclaredField("executorService");
+				execField.setAccessible(true);
+				execField.set(marketDataService, Executors.newSingleThreadScheduledExecutor());
+			}
+			catch (Exception ignored)
+			{
+			}
 
 			AlchMateProPanel panel = new AlchMateProPanel(
 				marketDataService,

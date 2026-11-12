@@ -13,7 +13,7 @@ repositories {
     mavenCentral()
 }
 
-def runeLiteVersion = '1.13.1'
+def runeLiteVersion = 'latest.release'
 def pluginMainClass = 'com.alchmatepro.AlchMateProPluginTest'
 
 dependencies {
@@ -29,7 +29,7 @@ dependencies {
 }
 
 group = 'com.alchmatepro'
-version = '1.0.0'
+version = '1.1.0'
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'

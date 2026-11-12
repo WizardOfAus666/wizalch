@@ -160,7 +160,7 @@ public class AlchMateProPanel extends PluginPanel implements NavigationControlle
 		titles.add(mainTitle);
 		titles.add(subTitle);
 
-		JLabel versionBadge = AlchTheme.createBadge("v1.0", AlchTheme.ACCENT_GOLD, AlchTheme.ACCENT_GOLD_DIM);
+		JLabel versionBadge = AlchTheme.createBadge("v1.1", AlchTheme.ACCENT_GOLD, AlchTheme.ACCENT_GOLD_DIM);
 		return AlchTheme.createSplitRow(titles, versionBadge);
 	}
 

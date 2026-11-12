@@ -474,7 +474,7 @@ public class MarketDataService
 
 		for (ItemMetadata metadata : currentMetadataMap.values())
 		{
-			if (metadata == null || !metadata.isAlchable())
+			if (metadata == null || !metadata.isAlchable() || itemMetadataService.isUnalchable(metadata))
 			{
 				continue;
 			}

@@ -145,4 +145,36 @@ public class MarketDataAndParsingTest
 		assertEquals(10000, summary.getMaxBuyPrice());
 		assertEquals(-500L, summary.getPriceChangeGp());
 	}
+
+	@Test
+	public void testUnalchableCategoryParsingAndFiltering() throws IOException
+	{
+		String categoryJson = "{\n"
+			+ "  \"continue\": {\"cmcontinue\": \"page|123\", \"continue\": \"-||\"},\n"
+			+ "  \"query\": {\n"
+			+ "    \"categorymembers\": [\n"
+			+ "      {\"pageid\": 1, \"ns\": 0, \"title\": \"Old school bond\"},\n"
+			+ "      {\"pageid\": 2, \"ns\": 0, \"title\": \"Custom unalchable relic\"}\n"
+			+ "    ]\n"
+			+ "  }\n"
+			+ "}";
+
+		String nextToken = metadataService.parseUnalchableCategoryJson(categoryJson);
+		assertEquals("page|123", nextToken);
+		assertTrue(metadataService.isUnalchable(13190, "Old school bond"));
+		assertTrue(metadataService.isUnalchable(77777, "Custom unalchable relic"));
+		assertFalse(metadataService.isUnalchable(1127, "Rune platebody"));
+
+		String mappingWithUnalchable = "[\n"
+			+ "  {\"id\": 1127, \"name\": \"Rune platebody\", \"members\": false, \"lowalch\": 25600, \"highalch\": 38400, \"limit\": 70, \"value\": 64000},\n"
+			+ "  {\"id\": 13190, \"name\": \"Old school bond\", \"members\": false, \"lowalch\": 0, \"highalch\": 1200000, \"limit\": 100, \"value\": 2000000},\n"
+			+ "  {\"id\": 77777, \"name\": \"Custom unalchable relic\", \"members\": true, \"lowalch\": 1000, \"highalch\": 50000, \"limit\": 10, \"value\": 80000}\n"
+			+ "]";
+
+		Map<Integer, ItemMetadata> filtered = metadataService.parseMappingJson(mappingWithUnalchable);
+		assertEquals(1, filtered.size());
+		assertNotNull(filtered.get(1127));
+		assertNull(filtered.get(13190));
+		assertNull(filtered.get(77777));
+	}
 }
